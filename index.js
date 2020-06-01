@@ -5,26 +5,31 @@ const app = express();
 app.use(express.json())
 
 const { secret } = require('./authConfig.json');
-
 const verifyToken = require('./verifyToken');
 
+/* Generate JWT  */
 function jwtGenerator(params={}){
   return jwt.sign(params, secret,{ expiresIn:86400 } );
 };
 
-app.get('/get-token', (req, res)=>{
-  return res.json({token: jwtGenerator({id:'ID_DO_USUARIO'})});
-});
+/* Routes */
 
-app.get('/check-token', (req, res)=>{
-  const { token } = req.body;
-  const infos = jwt.verify(token, secret)
-  return res.json(infos)
-});
+app
+  .get('/get-token', (req, res)=>{
+    return res.json({token: jwtGenerator({id:'USER_ID', name: 'USER_NAME'})});
+  })
 
-app.get('/', verifyToken, (req, res)=>{
-  return res.json({sucess: 'Chegoooou'});
-});
+  .get('/check-token', (req, res)=>{
+    const { token } = req.body;
+    const infos = jwt.verify(token, secret)
+    return res.json(infos)
+  })
 
-app.listen(3300, console.log('Running on 3300'));
+  .get('/', verifyToken, (req, res)=>{
+    const jwt_data = req.jwtdata;
+    const sucess = 'Auth sucess'
+    return res.json({jwt_data, sucess});
+  })
+
+module.exports = app
 

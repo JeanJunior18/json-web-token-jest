@@ -12,8 +12,13 @@ module.exports = (req,res,next) =>{
     jwt.verify(token, secret, (err, decoded)=>{
         if(err)
             return res.status(401).send({error: 'Token Invalid'})
-
-        req.userId = decoded.id
+        /**
+         * The decode variable shows all the data saved in the token
+         * 
+         * You can send this data to the controller via request
+         */
+        console.log(decoded)
+        req.jwtdata = decoded
         return next()
     })
 }
